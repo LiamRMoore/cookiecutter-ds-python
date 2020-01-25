@@ -4,9 +4,9 @@
 # GLOBALS                                                                       #
 #################################################################################
 
-PROJECT_NAME = building_age
-CONDA_ENVIRONMENT = building_age
-PYTHON_VERSION = 3.7
+PROJECT_NAME = {{ cookiecutter.project_name }}
+CONDA_ENVIRONMENT = {{ cookiecutter.conda_environment }}
+PYTHON_VERSION = {{ cookiecutter.python_version }}
 
 
 ##
@@ -37,7 +37,7 @@ clean-pyc:
 	find . -name '__pycache__' -exec rm -rf {} +
 
 lint:
-	flake8 tf_unet test
+	flake8 {{ cookiecutter.python_module_name }} test
 
 test:
 	py.test
@@ -45,22 +45,22 @@ test:
 test-all:
 	tox
 
-coverage:
-	coverage run --source tf_unet setup.py test
-	coverage report -m
-	coverage html
-	open htmlcov/index.html
+#coverage:
+#	coverage run --source {{ cookiecutter.python_module_name }} setup.py test
+#	coverage report -m
+#	coverage html
+#	open htmlcov/index.html
 
-docs:
-	sphinx-apidoc -o docs/ tf_unet
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-	open docs/_build/html/index.html
+#docs:
+#	sphinx-apidoc -o docs/ {{ cookiecutter.python_module_name }}
+#	$(MAKE) -C docs clean
+#	$(MAKE) -C docs html
+#	open docs/_build/html/index.html
 
-sdist: clean
-	pip freeze > requirements.rst
-	python setup.py sdist
-	ls -l dist
+#sdist: clean
+#	pip freeze > requirements.rst
+#	python setup.py sdist
+#	ls -l dist
 
 
 ##
@@ -70,8 +70,9 @@ sdist: clean
 #################################################################################
 
 ## Set up python interpreter environment
-environment:
-	conda env create -f environment.yml
+# this is done in the Dockerfile
+#environment:
+#	conda env create -f environment.yml
 
 git:
 	git init
@@ -82,35 +83,38 @@ git:
 ##
 
 # https://github.com/mapbox/robosat/blob/master/Makefile
-dockerimage ?= mapbox/robosat
-dockerfile ?= docker/Dockerfile.cpu
+#dockerimage ?= mapbox/robosat
+#dockerfile ?= Dockerfile
 srcdir ?= $(shell pwd)
 datadir ?= $(shell pwd)
 
 install:
-	@docker build -t $(dockerimage) -f $(dockerfile) .
+	@docker-compose up --no-start --build {{ cookiecutter.docker_service_name }}
+#	@docker build -t $(dockerimage) -f $(dockerfile) .
 
 i: install
 
 
 update:
-	@docker build -t $(dockerimage) -f $(dockerfile) . --pull --no-cache
+	@docker-compose up --no-start --build {{ cookiecutter.docker_service_name }}
+	#@docker build -t $(dockerimage) -f $(dockerfile) . --pull --no-cache
 
 u: update
 
 
 run:
-	@docker run -it --rm --ipc="host" --network="host" -v $(srcdir)/robosat:/usr/src/app/robosat -v $(datadir):/data --entrypoint=/bin/bash $(dockerimage)
+	@docker exec -it {{ cookiecutter.docker_service_name }}_container /bin/bash
+	#@docker run -it --rm --ipc="host" --network="host" -v $(srcdir)/robosat:/usr/src/app/robosat -v $(datadir):/data --entrypoint=/bin/bash $(dockerimage)
 
 r: run
 
 
-publish:
-	@docker image save $(dockerimage) \
-		| pv -N "Publish $(dockerimage) to $(sshopts)" -s $(shell docker image inspect $(dockerimage) --format "{{.Size}}") \
-		| ssh $(sshopts) "docker image load"
-
-p: publish
+#publish:
+#	@docker image save $(dockerimage) \
+#		| pv -N "Publish $(dockerimage) to $(sshopts)" -s $(shell docker image inspect $(dockerimage) --format "{{.Size}}") \
+#		| ssh $(sshopts) "docker image load"
+#
+#p: publish
 
 
 .PHONY: install i run r update u publish p

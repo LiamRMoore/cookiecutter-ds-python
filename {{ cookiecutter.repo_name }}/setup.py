@@ -13,7 +13,8 @@ setup(
 
     author="{{ cookiecutter.author_name }}",
 
-    packages=find_packages(exclude=['data', 'figures', 'output', 'notebooks']),
+    packages=find_packages(exclude=['data', 'figures', 'output', 'notebooks',
+                                   'bin', 'envs', 'tests']),
 
     long_description=read('README.md'),
 )

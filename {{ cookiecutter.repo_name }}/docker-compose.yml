@@ -2,16 +2,16 @@
 version: "3.7"
 # here we define our services, each of which has a corresponding image/container
 services:
-  # define the main service building_age which will run anaconda and hold the code
-  building_age:
+  # define the main service which will run anaconda and hold the code
+  {{ cookiecutter.docker_service_name }}:
       # circumstances under which to restart container
       restart: "no" # Options: on-failure, unless-stopped, always
       # builds from the Dockerfile in this directory (build context)
       build: .
       # assign the built image a name(:tag)
-      image: {{cookiecutter.repo_name}}
+      image: {{ cookiecutter.docker_service_name }}
       # name the container (rather than default which is $(PWD)_image_N)
-      container_name: {{cookiecutter.repo_name}}_container
+      container_name: {{ cookiecutter.docker_service_name }}_container
       # use the nvidia runtime to access gpu (only if nvidia-docker installed!):
       #runtime: "nvidia"
       #environment:

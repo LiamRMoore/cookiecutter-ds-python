@@ -12,7 +12,11 @@
 
 import yaml
 from pathlib import Path
-from building_age.utils import get_config_path
+
+def get_config_path(config_path='/home/root/config.yml'):
+    if Path(config_path).exists():
+        return config_path
+    raise FileNotFoundError(config_path)
 
 
 def join(loader, node):

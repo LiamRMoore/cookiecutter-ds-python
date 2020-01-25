@@ -26,7 +26,11 @@ WORKDIR /home/root/
 COPY envs/*.yml ./envs/
 
 # Create a conda environment from the environment specification file
+{%- if cookiecutter.hardware == "GPU" -%}
 RUN conda env create -f ./envs/{{cookiecutter.python_module_name}}_gpu_env.yml
+{%- elif cookiecutter.hardware == "CPU" -%}
+RUN conda env create -f ./envs/{{cookiecutter.python_module_name}}_cpu_env.yml
+{% endif %}
 
 # get jupyter themes for nicer notebook colours
 RUN pip install jupyterthemes
@@ -37,5 +41,9 @@ RUN jt -t chesterish -cellw 95%
 # add an alias "jn" to launch a jupyter-notebook process on port 8888
 RUN echo 'alias jn="jupyter-notebook --ip=0.0.0.0 --no-browser --allow-root --port=8888"' >> ~/.bashrc
 
+# Jupyter notebook
 EXPOSE 8888
+# Dask scheduler
+EXPOSE 8787
+
 CMD [ "/bin/bash" ]

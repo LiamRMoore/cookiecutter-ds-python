@@ -3,7 +3,7 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python={{cookiecutter.python_version}}
+  - python={{ cookiecutter.python_version }}
   - tensorflow-gpu
   - matplotlib
   - seaborn
