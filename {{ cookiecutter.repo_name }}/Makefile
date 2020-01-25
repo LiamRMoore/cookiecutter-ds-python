@@ -4,9 +4,66 @@
 # GLOBALS                                                                       #
 #################################################################################
 
-PROJECT_NAME = {{ cookiecutter.repo_name }}
-CONDA_ENVIRONMENT = {{ cookiecutter.conda_environment }}
-PYTHON_VERSION = {{ cookiecutter.python_version }}
+PROJECT_NAME = building_age
+CONDA_ENVIRONMENT = building_age
+PYTHON_VERSION = 3.7
+
+
+##
+
+.PHONY: help clean clean-pyc clean-build list test test-all coverage docs release sdist
+
+help:
+	@echo "clean-build - remove build artifacts"
+	@echo "clean-pyc - remove Python file artifacts"
+	@echo "lint - check style with flake8"
+	@echo "test - run tests quickly with the default Python"
+	@echo "test-all - run tests on every Python version with tox"
+	@echo "coverage - check code coverage quickly with the default Python"
+	@echo "docs - generate Sphinx HTML documentation, including API docs"
+	@echo "sdist - package"
+
+clean: clean-build clean-pyc
+
+clean-build:
+	rm -fr build/
+	rm -fr dist/
+	rm -fr *.egg-info
+
+clean-pyc:
+	find . -name '*.pyc' -exec rm -f {} +
+	find . -name '*.pyo' -exec rm -f {} +
+	find . -name '*~' -exec rm -f {} +
+	find . -name '__pycache__' -exec rm -rf {} +
+
+lint:
+	flake8 tf_unet test
+
+test:
+	py.test
+
+test-all:
+	tox
+
+coverage:
+	coverage run --source tf_unet setup.py test
+	coverage report -m
+	coverage html
+	open htmlcov/index.html
+
+docs:
+	sphinx-apidoc -o docs/ tf_unet
+	$(MAKE) -C docs clean
+	$(MAKE) -C docs html
+	open docs/_build/html/index.html
+
+sdist: clean
+	pip freeze > requirements.rst
+	python setup.py sdist
+	ls -l dist
+
+
+##
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -18,6 +75,45 @@ environment:
 
 git:
 	git init
+
+
+##
+# DOCKER
+##
+
+# https://github.com/mapbox/robosat/blob/master/Makefile
+dockerimage ?= mapbox/robosat
+dockerfile ?= docker/Dockerfile.cpu
+srcdir ?= $(shell pwd)
+datadir ?= $(shell pwd)
+
+install:
+	@docker build -t $(dockerimage) -f $(dockerfile) .
+
+i: install
+
+
+update:
+	@docker build -t $(dockerimage) -f $(dockerfile) . --pull --no-cache
+
+u: update
+
+
+run:
+	@docker run -it --rm --ipc="host" --network="host" -v $(srcdir)/robosat:/usr/src/app/robosat -v $(datadir):/data --entrypoint=/bin/bash $(dockerimage)
+
+r: run
+
+
+publish:
+	@docker image save $(dockerimage) \
+		| pv -N "Publish $(dockerimage) to $(sshopts)" -s $(shell docker image inspect $(dockerimage) --format "{{.Size}}") \
+		| ssh $(sshopts) "docker image load"
+
+p: publish
+
+
+.PHONY: install i run r update u publish p
 
 
 #################################################################################
