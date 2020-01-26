@@ -20,7 +20,7 @@ if not create_aws_scripts:
     remove(os.path.join('{{cookiecutter.repo_name}}', 'bin', 'update_ssh_config'))
 else:
     # sanity check
-    if not os.path.isfile({{ cookiecutter.aws_ec2_ssh_key }}):
+    if not os.path.isfile('{{ cookiecutter.aws_ec2_ssh_key }}'):
         warnings.warn("SSH key not found at {{ cookiecutter.aws_ec2_ssh_key }}!")
     # remove absolute path to file nested inside the generated folder
     #remove(os.path.join(os.getcwd(), '{{cookiecutter.repo_name}}', 'file_one.py'))
