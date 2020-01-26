@@ -8,5 +8,9 @@
     "description": "A short description of the project.",
     "open_source_license": [ "MIT", "BSD", "Not open source" ],
     "conda_environment": "{{ cookiecutter.repo_name }}",
-    "python_version": "Python interpreter (e.g. 3, 3.5, 2.7)"
+    "python_version": "Python interpreter (e.g. 3.5, 3.6, 3.7)",
+    "use_aws_ec2_instance": "y/n",
+    "aws_ec2_instance_id": "i-xxxxxxxxxx",
+    "aws_ec2_hostname": "my_ec2_instance",
+    "aws_ec2_ssh_key_path": "~/.ssh/my_aws_ec2_key.pem"
 }

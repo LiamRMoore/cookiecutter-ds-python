@@ -77,7 +77,6 @@ test-all:
 git:
 	git init
 
-
 ##
 # DOCKER
 ##
@@ -90,13 +89,14 @@ datadir ?= $(shell pwd)
 
 install:
 	@docker-compose up --no-start --build {{ cookiecutter.docker_service_name }}
+	@docker start {{ cookiecutter.docker_service_name }}_container
 #	@docker build -t $(dockerimage) -f $(dockerfile) .
 
 i: install
 
-
 update:
 	@docker-compose up --no-start --build {{ cookiecutter.docker_service_name }}
+	@docker start {{ cookiecutter.docker_service_name }}_container
 	#@docker build -t $(dockerimage) -f $(dockerfile) . --pull --no-cache
 
 u: update

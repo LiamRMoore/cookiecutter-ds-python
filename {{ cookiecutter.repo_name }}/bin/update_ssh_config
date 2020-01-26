@@ -6,6 +6,7 @@
 """
 import subprocess
 import argparse
+import os
 import regex as re
 import fileinput
 
@@ -13,7 +14,11 @@ from pathlib import Path
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--instance-id', type=str, default='i-012b779f4ab26afd3',
+parser.add_argument('--write-new-entry', action='store_true', default=False,
+                    help='flag True to write an appropriate entry into the SSH '
+                         'config file for the instance if it isn\'t found.')
+parser.add_argument('--instance-id', type=str,
+                    default='{{ cookiecutter.aws_ec2_instance_id}}',
                     help='the EC2 instance id (check aws2 describe-instances)')
 parser.add_argument('--host', type=str, default='ec2',
                     help='the shortcut ec2 hostname set in the config file')
@@ -22,11 +27,20 @@ parser.add_argument('--ssh-config', type=str, default='~/.ssh/config',
 parser.add_argument(
     '--ssh-key',
     type=str,
-    default='~/.ssh/eo_ai_building_age.pem',
+    default='{{ cookiecutter.aws_ec2_ssh_key }}',
     help='path to SSH key file'
 )
 
 args = parser.parse_args()
+
+# default ssh config string for ~/.ssh/config
+EXAMPLE_SSH_CONFIG = """
+
+Host {{ cookiecutter.aws_ec2_hostname }}
+    Hostname 35.177.141.214
+    User {{ cookiecutter.aws_ec2_username }}
+    IdentityFile {{ cookiecutter.aws_ec2_ssh_key }}
+"""
 
 
 # build regex pattern to isolate fields in config file
@@ -59,13 +73,15 @@ def get_instance_ip(instance_id:str=args.instance_id, *args, **kwargs) -> str:
     return stdout
 
 def update_config_ip(ip:str,
-                     ssh_config:str=args.ssh_config,
-                     host:str=args.host,
-                     ssh_key:str=args.ssh_key,
-                     verify_key:bool=True,
-                     user:str='ubuntu',
-                     pattern_fn:callable=mk_pattern,
-                     *args, **kwargs) -> None:
+                    ssh_config:str=args.ssh_config,
+                    host:str=args.host,
+                    ssh_key:str=args.ssh_key,
+                    verify_key:bool=True,
+                    write_new:bool=args.write_new_entry,
+                    default_config:str=EXAMPLE_SSH_CONFIG,
+                    user:str={{ cookiecutter.aws_ec2_username }},
+                    pattern_fn:callable=mk_pattern,
+                    *args, **kwargs) -> None:
     """ Update the ssh config file with the current AWS instance IP address
 
         Signature:
@@ -95,6 +111,22 @@ def update_config_ip(ip:str,
         text = file.read()
         match = re.search(ptn, text)
         if not match:
+            # if it isn't found and we flag to write a new configuration, make one
+            # then recur
+            if write_new:
+                print(f"Writing default SSH configuration to {ssh_config}...")
+                file.seek(0, os.SEEK_END)
+                file.write(default_config)
+                return update_config_ip(ip=ip,
+                                       ssh_config=ssh_config,
+                                       host=host,
+                                       ssh_key=ssh_key,
+                                       verify_key=True,
+                                       write_new=False, # don't inf recur
+                                       default_config=default_config,
+                                       user=user,
+                                       pattern_fn=pattern_fn,
+                                       *args, **kwargs)
             raise ValueError(f"No entry for {host} found in ssh config file!")
         text = re.sub(match.group("IP"), ip, text)
         if verify_key:

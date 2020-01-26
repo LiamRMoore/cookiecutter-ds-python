@@ -1,28 +1,8 @@
 # root dir
 project_dir     : &PROJECT_DIR /home/root
-# main data folder containing the folder listed in next paramters*/
+# main data folder
 data_path       : &DATA_PATH !join [*PROJECT_DIR, /data]
 raw_data_path   : &RAW_DATA_PATH !join [*DATA_PATH, /raw]
 int_data_path   : !join [*DATA_PATH, /intermediate]
 proc_data_path  : !join [*DATA_PATH, /processed]
 volumes_data_path : &VOLUMES_DATA_PATH !join [*DATA_PATH, /volumes]
-# mirrored drives
-eo_building_age_volume   : &EO_BA_VOL !join [*VOLUMES_DATA_PATH, /OP170124_MultiSat_BuildingAge]
-eo_other_volume   : &EO_OTHER_VOL !join [*VOLUMES_DATA_PATH, /other]
-# semantic segmentation datasets within shared drive
-eo_sem_seg_samples: &EO_SS_SAMPLES !join [*EO_OTHER_VOL, /other/DL_semantic_segm/sample_data]
-eo_sem_seg_sample_img_dir: !join [*EO_SS_SAMPLES, /input_img]
-eo_sem_seg_sample_shp_dir: !join [*EO_SS_SAMPLES, /input_shp]
-#output_prediction : !join [*PROJECT_DIR, /output/Flanders_09_15/prediction_testSP_proba_full_09.csv]
-# file extension of the training samples
-ext_images      : tif
-field_identifier : BLDG_KEY
-output_proba    : true
-class_of_interest : positive
-img_size       : 224
-# test-train split proportion
-test_size       : 0.10
-# seed : seed for feature extraction
-seed            : 9
-#test_path : folder containing the data to classify
-# is this missing?

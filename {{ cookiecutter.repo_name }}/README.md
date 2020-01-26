@@ -5,31 +5,51 @@
 
 Project Organization
 ------------
-
+    .
+    ├── bin/                                  <- Executable scripts directory
+{%- if cookiecutter.use_aws_ec2_instance.lower() == "y" -%}
+    │   ├── connect_to_aws                    <- Connect to AWS EC2 instance
+    │   ├── connect_to_notebook               <- Open a connection to jupyter notebook port on EC2 instance
+    │   └── update_ssh_config                  <- Update your ssh config file with current instance IP
+{% endif %}
     │
-    ├── data/               <- The original, immutable data dump. 
+    ├── config.yml                             <- configuration file for global project variables
     │
-    ├── figures/            <- Figures saved by scripts or notebooks.
+    ├── {{ cookiecutter.python_module_name }} <- The python package, **install with 'pip install -e .'**
+    │   ├── config.py                          <- Makes config.yml variables accessible in {{ cookiecutter.python_module_name }}.config namespace
+    │   └── models/                           <- store ML models
     │
-    ├── notebooks/          <- Jupyter notebooks. Naming convention is a short `-` delimited 
-    │                         description, a number (for ordering), and the creator's initials,
-    │                        e.g. `initial-data-exploration-01-hg`.
+    ├── data                                  <- Data dump
+    │   ├── intermediate                      <- Intermediate data e.g. serialised arrays
+    │   ├── processed                         <- Data ready-for-training/inference
+    │   ├── raw                               <- Raw data - should be immutable
+    │   └── volumes                           <- Mirrored drives
     │
-    ├── output/             <- Manipulated data, logs, etc.
+    ├── docker-compose.yml          <- Start-up configuration for docker container
     │
-    ├── tests/              <- Unit tests.
+    ├── Dockerfile                   <- Instructions for building docker image
     │
-    ├── {{ cookiecutter.python_module_name }}/      <- Python module with source code of this project.
+    ├── envs                        <- conda virtual environment definition files
+    │   ├── {{cookiecutter.python_module_name}}_cpu_env.yml
+    │   └── {{cookiecutter.python_module_name}}_gpu_env.yml
     │
-    ├── environment.yml     <- conda virtual environment definition file.
+    ├── figures                      <- Figures saved by scripts or notebooks.
     │
     ├── LICENSE
     │
-    ├── Makefile            <- Makefile with commands like `make environment`
+    ├── Makefile                     <- Makefile with commands like `make environment`
     │
-    ├── README.md           <- The top-level README for developers using this project.
+    ├── notebooks/                  <- Jupyter notebooks
     │
-    └── tox.ini             <- tox file with settings for running tox; see tox.testrun.org
+    ├── output/                     <- Manipulated data, logs, etc.
+    │
+    ├── README.md                   <- The top-level README for developers using this project.
+    │
+    ├── setup.py
+    │
+    ├── tests                       <- Unit tests.
+    │
+    └── tox.ini                     <- tox file with settings for running tox; see tox.testrun.org
 
 
 --------
@@ -44,7 +64,7 @@ Install the virtual environment with conda and activate it:
 
 ```bash
 $ conda env create -f environment.yml
-$ conda activate example-project 
+$ conda activate example-project
 ```
 
 Install `{{ cookiecutter.python_module_name }}` in the virtual environment:

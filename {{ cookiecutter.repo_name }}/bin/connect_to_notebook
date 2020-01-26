@@ -1,0 +1,1 @@
+ssh -NfL 9999:localhost:8888 {{ cookiecutter.aws_ec2_hostname }}
