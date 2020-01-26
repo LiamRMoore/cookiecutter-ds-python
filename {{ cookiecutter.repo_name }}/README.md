@@ -54,21 +54,37 @@ Project Organization
 
 --------
 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>.</p>
-
+Project based on the [cookiecutter data science project template][https://drivendata.github.io/cookiecutter-data-science/]
 
 Set up
 ------------
 
-Install the virtual environment with conda and activate it:
+Maybe make this a git repo:
 
 ```bash
-$ conda env create -f environment.yml
-$ conda activate example-project
+$ git init
 ```
 
-Install `{{ cookiecutter.python_module_name }}` in the virtual environment:
+Install the docker container and embedded conda environment:
 
 ```bash
-$ pip install --editable .
+$ make install
+```
+
+Enter the docker container (ensure script executable e.g. `chmod 755 ./bin/enter_container`):
+
+```bash
+./bin/enter_container
+```
+
+Activate the conda environment:
+
+```bash
+$ conda activate {{ cookiecutter.conda_environment }}
+```
+
+If you haven't done this in the container already, install the local python module:
+
+```bash
+$ pip install -e .
 ```
