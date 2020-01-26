@@ -12,5 +12,5 @@
     "use_aws_ec2_instance": "y/n",
     "aws_ec2_instance_id": "i-xxxxxxxxxx",
     "aws_ec2_hostname": "my_ec2_instance",
-    "aws_ec2_ssh_key_path": "~/.ssh/my_aws_ec2_key.pem"
+    "aws_ec2_ssh_key": "~/.ssh/my_aws_ec2_key.pem"
 }
