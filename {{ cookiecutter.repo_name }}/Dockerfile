@@ -26,11 +26,11 @@ WORKDIR /home/root/
 COPY envs/*.yml ./envs/
 
 # Create a conda environment from the environment specification file
-{%- if cookiecutter.hardware == "GPU" -%}
+{%- if cookiecutter.hardware == "GPU" %}
 RUN conda env create -f ./envs/{{cookiecutter.python_module_name}}_gpu_env.yml
-{%- elif cookiecutter.hardware == "CPU" -%}
+{%- elif cookiecutter.hardware == "CPU" %}
 RUN conda env create -f ./envs/{{cookiecutter.python_module_name}}_cpu_env.yml
-{% endif %}
+{%- endif %}
 
 # get jupyter themes for nicer notebook colours
 RUN pip install jupyterthemes
