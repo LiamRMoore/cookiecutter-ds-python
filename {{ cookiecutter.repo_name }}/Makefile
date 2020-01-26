@@ -110,8 +110,8 @@ r: run
 
 
 #publish:
-#	@docker image save $(dockerimage) \
-#		| pv -N "Publish $(dockerimage) to $(sshopts)" -s $(shell docker image inspect $(dockerimage) --format "{{.Size}}") \
+#	@docker image save $(dockerimage) 
+#		| pv -N "Publish $(dockerimage) to $(sshopts)" -s $(shell docker image inspect $(dockerimage) --format "{{.Size}}")
 #		| ssh $(sshopts) "docker image load"
 #
 #p: publish
